@@ -1,11 +1,11 @@
 {
   "name": "clean-html-js",
-  "version": "1.0.2",
-  "description": "a js package to clean out the noise out of your html",
+  "version": "1.0.4",
+  "description": "strip the noise out of html for clean reading",
   "keywords": [
     "readability",
     "reader",
-    "react-readability"
+    "reader-readability"
   ],
   "main": "src/index.js",
   "repository": {
