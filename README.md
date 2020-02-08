@@ -20,7 +20,7 @@ const grabReaderData = async function(html, url) {
   console.log(data);
 };
 
-grabReaderData("https://www.nytimes.com");
+grabReaderData("https://www.a11ywatch.com");
 ```
 
 - For more help getting started checkout [Example](https://github.com/j-mendez/react-native-reader-example)
