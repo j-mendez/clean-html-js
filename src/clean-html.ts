@@ -1,23 +1,23 @@
-const { Readability, JSDOMParser } = require("readability-node");
-const { DOMParser, XMLSerializer } = require("xmldom-silent");
-const UrlParser = require("url-parse");
-const sanitizeHtml = require("sanitize-html");
-const { allowedTags, nonTextTags } = require("./clean-html-css");
+import { Readability, JSDOMParser } from "readability-node";
+import { DOMParser, XMLSerializer } from "xmldom-silent";
+import UrlParser from "url-parse";
+import sanitizeHtml from "sanitize-html";
+import { allowedTags, nonTextTags } from "./clean-html-css";
 
-function convertHtmlToXhtml(html) {
+function convertHtmlToXhtml(html: string) {
   const xmlSerializer = new XMLSerializer();
   const xhtmlDocument = new DOMParser({
-    errorHandler: function(level, msg) {
+    errorHandler: function (level, msg) {
       if (level === "error") {
         throw new Error(`Unable to convert HTML to XHTML: ${msg}`);
       }
-    }
+    },
   }).parseFromString(html, "text/html");
 
   return xmlSerializer.serializeToString(xhtmlDocument);
 }
 
-function createJsDomDocument(xhtml) {
+function createJsDomDocument(xhtml: string) {
   const jsDomParser = new JSDOMParser();
   const document = jsDomParser.parse(xhtml.trim());
 
@@ -30,7 +30,7 @@ function createJsDomDocument(xhtml) {
   return document;
 }
 
-function createReadabilityUrl(sourceUrl) {
+function createReadabilityUrl(sourceUrl: string) {
   const sourceUrlParsed = new UrlParser(sourceUrl);
 
   if (!sourceUrlParsed || sourceUrlParsed.host.length === 0) {
@@ -47,38 +47,31 @@ function createReadabilityUrl(sourceUrl) {
     }${sourceUrlParsed.pathname.substring(
       0,
       sourceUrlParsed.pathname.lastIndexOf("/") + 1
-    )}`
+    )}`,
   };
 }
 
-function cleanHtml(html, sourceUrl) {
+function cleanHtml(html: string, sourceUrl: string) {
   html = sanitizeHtml(html, {
     allowedTags,
-    nonTextTags
+    nonTextTags,
   });
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     if (!html || !sourceUrl) {
       throw new Error("Invalid url or no html provided");
     }
     const readabilityUrl = createReadabilityUrl(sourceUrl);
     const xhtml = convertHtmlToXhtml(html);
     const document = createJsDomDocument(xhtml);
-    let cleanedHtml;
 
     try {
       const readability = new Readability(readabilityUrl, document);
-      if (readability) {
-        cleanedHtml = readability.parse();
-      }
+      readability && resolve(readability.parse());
     } catch (error) {
       throw new Error("Unable to clean HTML");
     }
-
-    resolve(cleanedHtml);
   });
 }
 
-module.exports = {
-  cleanHtml
-};
+export { cleanHtml };

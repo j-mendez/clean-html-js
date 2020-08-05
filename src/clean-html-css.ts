@@ -1,4 +1,4 @@
-var nonTextTags = [
+const nonTextTags = [
   "style",
   "script",
   "textarea",
@@ -6,10 +6,10 @@ var nonTextTags = [
   "html",
   "body",
   "div",
-  "span"
+  "span",
 ];
 
-var allowedTags = [
+const allowedTags = [
   "html",
   "body",
   "p",
@@ -19,10 +19,7 @@ var allowedTags = [
   "h4",
   "section",
   "div",
-  "span"
+  "span",
 ];
 
-module.exports = {
-  nonTextTags: nonTextTags,
-  allowedTags: allowedTags
-};
+export { allowedTags, nonTextTags };
