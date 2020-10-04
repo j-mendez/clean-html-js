@@ -51,7 +51,12 @@ function createReadabilityUrl(sourceUrl: string) {
   };
 }
 
-function cleanHtml(html: string, sourceUrl: string) {
+interface ReaderObject {
+  [x: string]: any;
+  content?: string;
+}
+
+function cleanHtml(html: string, sourceUrl: string): Promise<ReaderObject> {
   html = sanitizeHtml(html, {
     allowedTags,
     nonTextTags,

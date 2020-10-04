@@ -1,6 +1,6 @@
 {
   "name": "clean-html-js",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "extract reading material from a url",
   "keywords": [
     "readability",
@@ -10,7 +10,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "tsc"
+    "prepare": "tsc && mv types/* dist"
   },
   "repository": {
     "type": "git",
