@@ -17,11 +17,14 @@ $ yarn add clean-html-js
 ```typescript
 import cleanHtml from "clean-html-js";
 
-const grabReaderData = async function (html, url) {
+async function grabReaderData() {
+  const url = "https://www.a11ywatch.com";
+  const source = await fetch(url);
+  const html = await source.text();
   const readabilityArticle = await cleanHtml(html, url);
-};
+}
 
-grabReaderData("https://www.a11ywatch.com").then((data) => {
+grabReaderData().then((data) => {
   console.log(data);
 });
 ```
@@ -40,7 +43,7 @@ grabReaderData("https://www.a11ywatch.com").then((data) => {
 
 ## Config
 
-merges with [config](src/clean=html.ts)
+merges with [config](src/clean-html.ts)
 
 | prop        | default | type             | description                                      |
 | ----------- | ------- | ---------------- | ------------------------------------------------ |
