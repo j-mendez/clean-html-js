@@ -4,6 +4,27 @@ import UrlParser from "url-parse";
 import sanitizeHtml from "sanitize-html";
 import { allowedTags, nonTextTags } from "./clean-html-css";
 
+export interface ReaderObject {
+  length?: number;
+  content?: string;
+  excerpt?: string;
+  title?: string;
+  byline: boolean | null;
+  dir: string | undefined;
+  uri?: {
+    spec: string;
+    host: string;
+    scheme: string;
+    prePath: string;
+    pathBase: string;
+  };
+}
+
+export interface Config {
+  allowedTags?: string[];
+  nonTextTags?: string[];
+}
+
 function convertHtmlToXhtml(html: string) {
   const xmlSerializer = new XMLSerializer();
   const xhtmlDocument = new DOMParser({
@@ -49,16 +70,6 @@ function createReadabilityUrl(sourceUrl: string) {
       sourceUrlParsed.pathname.lastIndexOf("/") + 1
     )}`,
   };
-}
-
-interface ReaderObject {
-  [x: string]: any;
-  content?: string;
-}
-
-interface Config {
-  allowedTags?: string[];
-  nonTextTags?: string[];
 }
 
 function cleanHtml(
