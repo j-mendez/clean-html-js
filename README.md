@@ -1,5 +1,7 @@
 ## clean-html-js
 
+[![A11yWatch](https://circleci.com/gh/A11yWatch/clean-html-js.svg?style=svg)](https://circleci.com/gh/A11yWatch/clean-html-js)
+
 clean html content for reading. simply pass in your content as html and get a readability object
 
 ## Installation Instructions
