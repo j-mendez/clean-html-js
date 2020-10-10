@@ -56,10 +56,25 @@ interface ReaderObject {
   content?: string;
 }
 
-function cleanHtml(html: string, sourceUrl: string): Promise<ReaderObject> {
+interface Config {
+  allowedTags?: string[];
+  nonTextTags?: string[];
+}
+
+function cleanHtml(
+  html: string,
+  sourceUrl: string,
+  config: Config = { allowedTags: [], nonTextTags: [] }
+): Promise<ReaderObject> {
   html = sanitizeHtml(html, {
-    allowedTags,
-    nonTextTags,
+    allowedTags: [
+      ...allowedTags,
+      ...(config?.allowedTags ? config?.allowedTags : []),
+    ],
+    nonTextTags: [
+      ...nonTextTags,
+      ...(config?.nonTextTags ? config?.nonTextTags : []),
+    ],
   });
 
   return new Promise((resolve) => {
@@ -79,4 +94,4 @@ function cleanHtml(html: string, sourceUrl: string): Promise<ReaderObject> {
   });
 }
 
-export { cleanHtml };
+export default cleanHtml;
