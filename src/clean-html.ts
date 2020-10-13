@@ -3,6 +3,7 @@ import { DOMParser, XMLSerializer } from "xmldom-silent";
 import UrlParser from "url-parse";
 import sanitizeHtml from "sanitize-html";
 import { allowedTags, nonTextTags } from "./clean-html-css";
+import { fetchHtml } from "./fetch";
 
 export interface ReaderObject {
   length?: number;
@@ -40,7 +41,7 @@ function convertHtmlToXhtml(html: string) {
 
 function createJsDomDocument(xhtml: string) {
   const jsDomParser = new JSDOMParser();
-  const document = jsDomParser.parse(xhtml.trim());
+  jsDomParser.parse(xhtml.trim());
 
   if (jsDomParser.errorState) {
     throw new Error(
@@ -48,7 +49,7 @@ function createJsDomDocument(xhtml: string) {
     );
   }
 
-  return document;
+  return jsDomParser.doc;
 }
 
 function createReadabilityUrl(sourceUrl: string) {
@@ -72,35 +73,38 @@ function createReadabilityUrl(sourceUrl: string) {
   };
 }
 
-function cleanHtml(
+async function cleanHtml(
   html: string,
   sourceUrl: string,
   config: Config = { allowedTags: [], nonTextTags: [] }
 ): Promise<ReaderObject> {
-  html = sanitizeHtml(html, {
-    allowedTags: [
-      ...allowedTags,
-      ...(config?.allowedTags ? config?.allowedTags : []),
-    ],
-    nonTextTags: [
-      ...nonTextTags,
-      ...(config?.nonTextTags ? config?.nonTextTags : []),
-    ],
-  });
-
-  return new Promise((resolve) => {
-    if (!html || !sourceUrl) {
-      throw new Error("Invalid url or no html provided");
+  html = await sanitizeHtml(
+    !html && sourceUrl ? await fetchHtml(sourceUrl) : html,
+    {
+      allowedTags: [
+        ...allowedTags,
+        ...(config?.allowedTags ? config?.allowedTags : []),
+      ],
+      nonTextTags: [
+        ...nonTextTags,
+        ...(config?.nonTextTags ? config?.nonTextTags : []),
+      ],
     }
-    const readabilityUrl = createReadabilityUrl(sourceUrl);
-    const xhtml = convertHtmlToXhtml(html);
-    const document = createJsDomDocument(xhtml);
-
+  );
+  return new Promise((resolve) => {
+    if (!html) {
+      throw new Error(
+        "Invalid url or no html provided, please use a html string or url"
+      );
+    }
     try {
-      const readability = new Readability(readabilityUrl, document);
-      readability && resolve(readability.parse());
+      const readabilityUrl = createReadabilityUrl(sourceUrl);
+      const xhtml = convertHtmlToXhtml(html);
+      const document = createJsDomDocument(xhtml);
+
+      resolve(new Readability(readabilityUrl, document).parse());
     } catch (error) {
-      throw new Error("Unable to clean HTML");
+      throw new Error("Unable to clean HTML an issue occured");
     }
   });
 }

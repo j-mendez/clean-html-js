@@ -17,14 +17,24 @@ $ yarn add clean-html-js
 ```typescript
 import cleanHtml from "clean-html-js";
 
+const url = "https://www.a11ywatch.com";
+
 async function grabReaderData() {
-  const url = "https://www.a11ywatch.com";
   const source = await fetch(url);
   const html = await source.text();
   const readabilityArticle = await cleanHtml(html, url);
 }
 
+async function grabReaderDataSimple() {
+  const readabilityArticle = await cleanHtml("", url);
+}
+
 grabReaderData().then((data) => {
+  console.log(data);
+});
+
+// or just the url
+grabReaderDataSimple().then((data) => {
   console.log(data);
 });
 ```
@@ -33,21 +43,19 @@ grabReaderData().then((data) => {
 
 ## Available Params
 
-| param  | default | type   | description                      |
-| ------ | ------- | ------ | -------------------------------- |
-| url    | ""      | string | Required: A valid web url source |
-| html   | ""      | string | Required: html string            |
-| config | {}      | Config | optional: config object          |
+| param     | default | type   | description                                                          |
+| --------- | ------- | ------ | -------------------------------------------------------------------- |
+| html      | ""      | string | Required: html string to parse                                       |
+| sourceUrl | ""      | string | Optional: url of the html source to prevent fetching extra resources |
+| config    | {}      | Config | Optional: config object                                              |
 
-## Interface
+If html is not provided and sourceUrl is found an attempt to fetch the html is done.
 
 ## Config
 
 merges with [config](src/clean-html.ts)
 
-| prop        | default | type             | description                                      |
-| ----------- | ------- | ---------------- | ------------------------------------------------ |
-| allowedTags | null    | array of strings | html elements allowed                            |
-| nonTextTags | null    | array of strings | html elements that should not be treated as text |
-
-allowedTags currently does not support svgs
+| prop        | default | type             | description                                       |
+| ----------- | ------- | ---------------- | ------------------------------------------------- |
+| allowedTags | null    | array of strings | html elements allowed note:(svgs must be inlined) |
+| nonTextTags | null    | array of strings | html elements that should not be treated as text  |
