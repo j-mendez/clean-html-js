@@ -59,3 +59,9 @@ merges with [config](src/clean-html.ts)
 | ----------- | ------- | ---------------- | ------------------------------------------------- |
 | allowedTags | null    | array of strings | html elements allowed note:(svgs must be inlined) |
 | nonTextTags | null    | array of strings | html elements that should not be treated as text  |
+
+## Testing
+
+to test custom pages pass in your params seperated by commas into the jest test example `yarn jest '-params=mozilla,https://www.mozilla.com'` or `yarn jest '-params=a11ywatch,https://www.a11ywatch.com'`. First param is the html file being pulled from the `examples` folder and the second is an optional uri for the resources.
+
+1. `npm test`

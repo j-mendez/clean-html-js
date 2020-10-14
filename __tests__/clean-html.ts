@@ -1,26 +1,45 @@
 import cleanHtml from "../src/clean-html";
 import fetch from "isomorphic-fetch";
+import fs from "fs";
+import path from "path";
 
 describe("clean html", () => {
-  const URI = process.env.URI || "https://www.a11ywatch.com";
-  let html;
+  const htmlSize: number[] = [];
+  const paramKey = "-params=";
+  let uri = "https://www.a11ywatch.com";
+  let html = "";
+  let htmlFile = ""; // example: a11ywatch
 
-  beforeAll(async () => {
-    const source = await fetch(URI);
-    html = await source.text();
+  process.argv.forEach((item) => {
+    if (item.startsWith(paramKey)) {
+      const params = item.substring(paramKey.length).split(",");
+
+      if (params.length) {
+        [htmlFile, uri] = params;
+      }
+    }
   });
 
-  const htmlSize: number[] = [];
+  html = fs.readFileSync(
+    path.resolve(
+      __dirname,
+      `../examples/test-pages/${(htmlFile || "a11ywatch").replace(
+        ".html",
+        ""
+      )}.html`
+    ),
+    "utf8"
+  );
 
   test("can sanatize html", async () => {
-    const data = await cleanHtml(html, URI);
+    const data = await cleanHtml(html, uri);
     htmlSize.push(data.content?.length || 0);
 
     expect(data).not.toBe(null);
   });
 
   test("can allow imgs", async () => {
-    const data = await cleanHtml(html, URI, {
+    const data = await cleanHtml(html, uri, {
       allowedTags: ["img", "svg"],
     });
 
@@ -28,7 +47,10 @@ describe("clean html", () => {
   });
 
   test("can parse without html provided", async () => {
-    const data = await cleanHtml("", URI);
+    if (typeof fetch === "undefined") {
+      global.fetch = require("isomorphic-fetch").default;
+    }
+    const data = await cleanHtml("", uri);
 
     expect(data).not.toBe(null);
   });

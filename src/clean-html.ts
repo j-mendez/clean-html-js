@@ -91,6 +91,7 @@ async function cleanHtml(
       ],
     }
   );
+
   return new Promise((resolve) => {
     if (!html) {
       throw new Error(
