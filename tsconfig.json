@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "target": "es2019",
+    "moduleResolution": "node",
     "noImplicitAny": false,
-    "lib": ["dom", "es2015"],
+    "lib": ["dom", "es2019"],
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,

@@ -1,12 +1,17 @@
-const fetchHtml = (sourceUrl: string): Promise<string> => {
-  return typeof fetch !== "undefined"
-    ? fetch(sourceUrl)
-        .then((data) => data.text())
-        .catch((e) => {
-          console.error(`Issue fetching ${sourceUrl} ${e}`);
-          return "";
-        })
-    : Promise.resolve("");
-};
+const fetchHtml = async (sourceUrl: string): Promise<string> => {
+  let html
+  try {
+    if (typeof fetch !== "undefined") {
+      const data = await fetch(sourceUrl)
+      const source = await data.text()
 
-export { fetchHtml };
+      html = source
+    }
+  } catch (e) {
+    console.error(`Issue fetching ${sourceUrl} ${e}`)
+  } finally {
+    return Promise.resolve(html || "")
+  }
+}
+
+export { fetchHtml }

@@ -1,62 +1,70 @@
-import { Readability, JSDOMParser } from "readability-node";
-import { DOMParser, XMLSerializer } from "xmldom-silent";
-import UrlParser from "url-parse";
-import sanitizeHtml from "sanitize-html";
-import { allowedTags, nonTextTags } from "./clean-html-css";
-import { fetchHtml } from "./fetch";
+import { Readability, JSDOMParser } from "readability-node"
+import { DOMParser, XMLSerializer } from "xmldom-silent"
+import UrlParser from "url-parse"
+import sanitizeHtml from "sanitize-html"
+import { allowedTags, nonTextTags } from "./clean-html-css"
+import { fetchHtml } from "./fetch"
 
 export interface ReaderObject {
-  length?: number;
-  content?: string;
-  excerpt?: string;
-  title?: string;
-  byline: boolean | null;
-  dir: string | undefined;
+  length?: number
+  content?: string
+  excerpt?: string
+  title?: string
+  byline: boolean | null
+  dir: string | undefined
   uri?: {
-    spec: string;
-    host: string;
-    scheme: string;
-    prePath: string;
-    pathBase: string;
-  };
+    spec: string
+    host: string
+    scheme: string
+    prePath: string
+    pathBase: string
+  }
 }
 
 export interface Config {
-  allowedTags?: string[];
-  nonTextTags?: string[];
+  allowedTags?: string[]
+  nonTextTags?: string[]
 }
 
 function convertHtmlToXhtml(html: string) {
-  const xmlSerializer = new XMLSerializer();
-  const xhtmlDocument = new DOMParser({
-    errorHandler: function (level, msg) {
-      if (level === "error") {
-        throw new Error(`Unable to convert HTML to XHTML: ${msg}`);
+  try {
+    const xmlSerializer = new XMLSerializer()
+    const xhtmlDocument = new DOMParser({
+      errorHandler: function (level, msg) {
+        if (level === "error") {
+          throw new Error(`Unable to convert HTML to XHTML: ${msg}`)
+        }
       }
-    },
-  }).parseFromString(html, "text/html");
+    }).parseFromString(html, "text/html")
 
-  return xmlSerializer.serializeToString(xhtmlDocument);
+    return xmlSerializer.serializeToString(xhtmlDocument)
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 function createJsDomDocument(xhtml: string) {
-  const jsDomParser = new JSDOMParser();
-  jsDomParser.parse(xhtml.trim());
+  try {
+    const jsDomParser = new JSDOMParser()
+    jsDomParser.parse(xhtml.trim())
 
-  if (jsDomParser.errorState) {
-    throw new Error(
-      `Unable to parse XHTML into JsDom ${jsDomParser.errorState}`
-    );
+    if (jsDomParser.errorState) {
+      throw new Error(
+        `Unable to parse XHTML into JsDom ${jsDomParser.errorState}`
+      )
+    }
+
+    return jsDomParser.doc
+  } catch (e) {
+    console.error(e)
   }
-
-  return jsDomParser.doc;
 }
 
 function createReadabilityUrl(sourceUrl: string) {
-  const sourceUrlParsed = new UrlParser(sourceUrl);
+  const sourceUrlParsed = new UrlParser(sourceUrl)
 
   if (!sourceUrlParsed || sourceUrlParsed.host.length === 0) {
-    throw new Error("Invalid or no source url provided");
+    throw new Error("Invalid or no source url provided")
   }
 
   return {
@@ -69,8 +77,8 @@ function createReadabilityUrl(sourceUrl: string) {
     }${sourceUrlParsed.pathname.substring(
       0,
       sourceUrlParsed.pathname.lastIndexOf("/") + 1
-    )}`,
-  };
+    )}`
+  }
 }
 
 async function cleanHtml(
@@ -78,36 +86,38 @@ async function cleanHtml(
   sourceUrl: string,
   config: Config = { allowedTags: [], nonTextTags: [] }
 ): Promise<ReaderObject> {
-  html = await sanitizeHtml(
-    !html && sourceUrl ? await fetchHtml(sourceUrl) : html,
-    {
+  try {
+    const dataSource = !html && sourceUrl ? await fetchHtml(sourceUrl) : html
+
+    html = await sanitizeHtml(dataSource, {
       allowedTags: [
         ...allowedTags,
-        ...(config?.allowedTags ? config?.allowedTags : []),
+        ...(config?.allowedTags ? config?.allowedTags : [])
       ],
       nonTextTags: [
         ...nonTextTags,
-        ...(config?.nonTextTags ? config?.nonTextTags : []),
-      ],
-    }
-  );
-
-  return new Promise((resolve) => {
+        ...(config?.nonTextTags ? config?.nonTextTags : [])
+      ]
+    })
+  } catch (e) {
+    console.error(e)
+  }
+  return new Promise(resolve => {
     if (!html) {
       throw new Error(
         "Invalid url or no html provided, please use a html string or url"
-      );
+      )
     }
     try {
-      const readabilityUrl = createReadabilityUrl(sourceUrl);
-      const xhtml = convertHtmlToXhtml(html);
-      const document = createJsDomDocument(xhtml);
+      const readabilityUrl = createReadabilityUrl(sourceUrl)
+      const xhtml = convertHtmlToXhtml(html)
+      const document = createJsDomDocument(xhtml)
 
-      resolve(new Readability(readabilityUrl, document).parse());
+      resolve(new Readability(readabilityUrl, document).parse())
     } catch (error) {
-      throw new Error("Unable to clean HTML an issue occured");
+      throw new Error("Unable to clean HTML an issue occured")
     }
-  });
+  })
 }
 
-export default cleanHtml;
+export default cleanHtml

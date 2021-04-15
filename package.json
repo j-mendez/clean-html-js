@@ -1,6 +1,6 @@
 {
   "name": "clean-html-js",
-  "version": "1.2.0",
+  "version": "1.3.13",
   "description": "extract reading material from a url",
   "keywords": [
     "readability",
@@ -15,24 +15,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jeffreymendez1993/readerjs.git"
+    "url": "https://github.com/j-mendez/clean-html-js.git"
   },
   "dependencies": {
     "buffer": "^5.2.1",
     "events": "^3.0.0",
     "path": "^0.12.7",
     "readability-node": "^0.1.0",
-    "sanitize-html": "^1.20.0",
-    "url": "^0.11.0",
+    "sanitize-html": "1.20.0",
     "url-parse": "^1.4.4",
     "xmldom-silent": "^0.1.19"
   },
   "author": "Jeffrey Mendez <jeffmendez19@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jeffreymendez1993/readerjs/issues"
+    "url": "https://github.com/j-mendez/clean-html-js/issues"
   },
-  "homepage": "https://github.com/jeffreymendez1993/readerjs#readme",
+  "homepage": "https://github.com/j-mendez/clean-html-js#readme",
   "devDependencies": {
     "isomorphic-fetch": "^3.0.0",
     "jest": "^26.5.2",
