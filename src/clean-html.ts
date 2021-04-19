@@ -87,28 +87,29 @@ async function cleanHtml(
   config: Config = { allowedTags: [], nonTextTags: [] }
 ): Promise<ReaderObject> {
   try {
-    const dataSource = !html && sourceUrl ? await fetchHtml(sourceUrl) : html
-
-    html = await sanitizeHtml(dataSource, {
-      allowedTags: [
-        ...allowedTags,
-        ...(config?.allowedTags ? config?.allowedTags : [])
-      ],
-      nonTextTags: [
-        ...nonTextTags,
-        ...(config?.nonTextTags ? config?.nonTextTags : [])
-      ]
-    })
+    html = !html && sourceUrl ? await fetchHtml(sourceUrl) : html
   } catch (e) {
     console.error(e)
   }
+
+  html = sanitizeHtml(html, {
+    allowedTags: [
+      ...allowedTags,
+      ...(config?.allowedTags ? config?.allowedTags : [])
+    ],
+    nonTextTags: [
+      ...nonTextTags,
+      ...(config?.nonTextTags ? config?.nonTextTags : [])
+    ]
+  })
+
   return new Promise(resolve => {
-    if (!html) {
-      throw new Error(
-        "Invalid url or no html provided, please use a html string or url"
-      )
-    }
     try {
+      if (!html) {
+        throw new Error(
+          "Invalid url or no html provided, please use a html string or url"
+        )
+      }
       const readabilityUrl = createReadabilityUrl(sourceUrl)
       const xhtml = convertHtmlToXhtml(html)
       const document = createJsDomDocument(xhtml)
