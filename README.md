@@ -14,7 +14,7 @@ $ yarn add clean-html-js
 
 ![iOS and android apps being parsed into readability views using the clean-html-js and react-native-reader package](https://i.imgur.com/WeROrao.gif)
 
-```typescript
+```ts
 import cleanHtml from "clean-html-js";
 
 const url = "https://www.a11ywatch.com";
@@ -26,7 +26,7 @@ async function grabReaderData() {
 }
 
 async function grabReaderDataSimple() {
-  const readabilityArticle = await cleanHtml("", url);
+  return await cleanHtml("", url);
 }
 
 grabReaderData().then((data) => {
