@@ -12,7 +12,7 @@ $ yarn add clean-html-js
 
 ## Example
 
-![Alt Text](https://i.imgur.com/WeROrao.gif)
+![iOS and android apps being parsed into readability views using the clean-html-js and react-native-reader package](https://i.imgur.com/WeROrao.gif)
 
 ```typescript
 import cleanHtml from "clean-html-js";
@@ -22,7 +22,7 @@ const url = "https://www.a11ywatch.com";
 async function grabReaderData() {
   const source = await fetch(url);
   const html = await source.text();
-  const readabilityArticle = await cleanHtml(html, url);
+  return await cleanHtml(html, url);
 }
 
 async function grabReaderDataSimple() {
@@ -38,8 +38,6 @@ grabReaderDataSimple().then((data) => {
   console.log(data);
 });
 ```
-
-- For more help getting started checkout [Example](https://github.com/j-mendez/react-native-reader-example)
 
 ## Available Params
 
